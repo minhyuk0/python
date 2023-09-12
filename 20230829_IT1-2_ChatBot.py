@@ -8,7 +8,7 @@ from random import *
 TOKEN = "6654430104:AAFaDs58Kiktjv2EpjBz86WueBZ5cTMYI4M"
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
-word = ["banana","apple","grape"]
+word = ["apple","banana","c"]
 gamelist ={}
 
 def get_url(url):
@@ -43,32 +43,34 @@ def process_all(updates):
         try:
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
-
+            # print(gamelist) #for debuging
             if(text == "/hangman"):
-                send_message("행맨 게임을 시작합니다. ",chat)
+                send_message("행맨 게임을 시작합니다. ", chat)
                 word = choice(word)
-                print("game started woth", chat, "/ Q:", word)
-                gamelist[chat] = [word, False]
+                print("game started with", chat, "/ Q:", word)
+                gamelist[chat] = [word, False]  # Q, A, Success?
             elif(text == "/stop"):
-                send_message("게임을 중단합니다.", chat)
+                send_message("게임을 중단합니다. ", chat)
+                gamelist[chat] = []
             elif(text == "/start"):
-                print("new user", chat)
-                send_message("반갑습니다. 행맨 봇입니다. 게임을 시작하길 원하시면 /hangman 명령어를 입력하세요.")
+                print("new user:", chat)
+                send_message(
+                    "반갑습니다. 행맨 봇입니다. 게임을 시작하기 원하시면 /hangman 명령을 입력하세요. 게임을 멈추고 싶을 때는 언제든 /stop 명령을 입력하면 됩니다. ", chat)
             elif(len(gamelist[chat]) > 1 and not gamelist[chat][1]):
-                print(chat,"entered",text)
+                print(chat, "entered", text)
                 succeed = True
                 feedback = ""
                 for w in gamelist[chat][0]:
                     if w in text:
-                        feedback += w + ""
+                        feedback += w + " "
                     else:
                         feedback += "_ "
                         succeed = False
                 gamelist[chat][1] = succeed
-                send_message(feedback,chat)
+                send_message(feedback, chat)
 
                 if succeed:
-                    send_message("맞췄습니다!!", chat)
+                    send_message("맞췄습니다!!!", chat)
                     print(chat, "finished a game")
                     gamelist[chat] = []
         except Exception as e:
