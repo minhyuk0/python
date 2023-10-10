@@ -5,10 +5,10 @@ import urllib
 
 from random import *
 
-TOKEN = "6696796795:AAF4LdOL8X_q29G0cO9EKNDXB0utDX_maIY"
+TOKEN = "6654430104:AAFaDs58Kiktjv2EpjBz86WueBZ5cTMYI4M"
 URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
-word = ["a","b","c"]
+rn = randrange(1, 100 +1, 1)
 gamelist ={}
 
 def get_url(url):
@@ -44,20 +44,34 @@ def process_all(updates):
             text = update["message"]["text"]
             chat = update["message"]["chat"]["id"]
 
-            if(text == "/hangman"):
-                send_message("행맨 게임을 시작합니다. ",chat)
-                word = choice(word)
-                print("game started woth", chat, "/ Q:", word)
-                gamelist[chat] = [word, False]
+            if(text == "/numgame"):
+                rn = Random.randrange(1, 100 +1, 1)
+                print(rn)
+                t_cnt=1
+
+                send_message("1~100사이의 숫자를 입력하세요. ",chat)
+                print("game started with", chat, "/ random Number")
+                gamelist[chat] = [rn, t_cnt, False]
             elif(text == "/stop"):
-                send_message("게임을 중단합니다.", chat)
+                send_message("stop game.", chat)
+                gamelist[chat] = []
             elif(text == "/start"):
                 print("new user", chat)
-                send_message("반갑습니다. 행맨 봇입니다. 게임을 시작하길 원하시면 /hangman 명령어를 입력하세요.")
-            elif(len(gamelist[chat]) > 1 and not gamelist[chat][1]):
+                send_message("게임을 시작하기 원하시면 /numgame 명령어를 입력하세요. 게임을 멈추고 싶을떄는 /stop 명령어를 입력하세요.", chat)
+            elif(len(gamelist[chat]) > 1 and not gamelist[chat][2]):
+                num=int(text)
                 print(chat,"entered",text)
-                succeed = True
-                feedback = ""
+                print("game status(entered) : ", gamelist)
+                if(num > gamelist[chat][0]):
+                    send_message("Down", chat)
+                    gamelist[chat][1]+=1
+                elif (num < gamelist[chat][0]):
+                    send_message("up" ,chat)
+                    gamelist[chat][0]+=1
+                elif (num == gamelist[chat][0]):
+                    succeed = True
+
+                    feedback = ""
                 for w in gamelist[chat][0]:
                     if w in text:
                         feedback += w + ""
